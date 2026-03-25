@@ -15,11 +15,16 @@ jobs:
   copy-assets:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Clone repo to the VM
+      # STEP 1: Use the correct node version
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # Step 2: Clone repo to the VM
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: upload ./dist as a Github Pages artifact
+      # Step 3: upload ./dist as a Github Pages artifact
       - name: Upload Pages Artifacts
         uses: actions/upload-pages-artifact@v4
         with:
@@ -35,7 +40,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      ## Step 3 Get artifacts from Job 1 and publishes the Github Page
+      ## Step 4 Get artifacts from Job 1 and publishes the Github Page
       - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v4
