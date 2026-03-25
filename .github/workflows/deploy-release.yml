@@ -1,0 +1,41 @@
+name: Deploy Pages for Release
+
+on:
+  release:
+    types: [published]
+
+# Applies across all jobs in this workflow
+
+permissions:
+  pages: write         # Allowed to publish to github pages
+  id-token: write      # needed for secure deployment authentication
+
+jobs:
+  # Copy assets job
+  copy-assets:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Clone repo to the VM
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: upload ./dist as a Github Pages artifact
+      - name: Upload Pages Artifacts
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+
+  # Deploy job
+  deploy:
+    needs: copy-assets
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      ## Step 3 Get artifacts from Job 1 and publishes the Github Page
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
